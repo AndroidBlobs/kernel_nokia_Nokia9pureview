@@ -430,8 +430,18 @@ void input_event(struct input_dev *dev,
 {
 	unsigned long flags;
 
-	if (is_event_supported(type, dev->evbit, EV_MAX)) {
+	#ifdef CONFIG_FIH_KEY
+	if (EV_KEY == type) {
+		switch (code) {
+			case KEY_VOLUMEDOWN: pr_err("vol_down, %d\n", value); break;
+			case KEY_VOLUMEUP: pr_err("vol_up, %d\n", value); break;
+			case KEY_POWER: pr_err("power, %d\n", value); break;
+			default: break;
+		}
+	}
+	#endif
 
+	if (is_event_supported(type, dev->evbit, EV_MAX)) {
 		spin_lock_irqsave(&dev->event_lock, flags);
 		input_handle_event(dev, type, code, value);
 		spin_unlock_irqrestore(&dev->event_lock, flags);
